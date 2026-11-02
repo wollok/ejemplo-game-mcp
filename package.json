@@ -1,9 +1,19 @@
 {
   "name": "wollok-game-mcp",
   "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "mcp": "node mcp-server.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
   "resourceFolder": "assets",
   "natives": "natives",
   "wollokVersion": "4.2.3",
   "author": "palumbon",
-  "license": "ISC"
+  "license": "ISC",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.32.2"
+  }
 }

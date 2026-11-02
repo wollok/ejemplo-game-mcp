@@ -1,17 +1,18 @@
-var data = undefined
+import { pendingMoves, position } from '../mcp-server.js'
 
-const pokedex = {
-  *cargar(_self) {
-    fetch('https://pokeapi.co/api/v2/pokemon/ditto')
-      .then((res) => res.json())
-      .then(pokemon => data = pokemon)
-  },
+const mcp = {
+  *flush(_self) {
+    const wx = yield* this.send('x', _self)
+    const wy = yield* this.send('y', _self)
+    position.x = wx.innerNumber
+    position.y = wy.innerNumber
+    
 
+    for (const move of pendingMoves)
+      yield* this.send(move, _self)
 
-  *ditto(_self) {
-    if (!data) return yield* this.reify('No hay información')
-    return yield* this.reify(data['name'])
+    pendingMoves.length = 0
   },
 }
 
-export { pokedex }
+export { mcp }

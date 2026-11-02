@@ -7,9 +7,8 @@ program PepitaGame {
 	game.width(10)
 	
 	game.addVisualCharacter(wko)
-
-	keyboard.space().onPressDo({ game.say(wko, pokedex.ditto()) })
-	keyboard.enter().onPressDo({ pokedex.cargar() })
+	
+	game.tick(100, { mcp.flush() }, true).start()
 	
 	game.start()
 }
