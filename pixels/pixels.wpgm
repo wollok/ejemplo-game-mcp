@@ -1,0 +1,16 @@
+import wollok.game.*
+import pixelArt.*
+
+program PixelArt {
+	game.title("Pixel Art")
+	game.height(50)
+	game.width(50)
+	game.cellSize(10)
+	game.ground("white.png")
+	
+	// pixelArt.createCanvas()
+
+	game.onClickDo { position => pixelArt.newPixelIn(position) }
+	
+	game.start()
+}
