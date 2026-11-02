@@ -1,0 +1,9 @@
+{
+  "name": "wollok-game-mcp",
+  "version": "1.0.0",
+  "resourceFolder": "assets",
+  "natives": "natives",
+  "wollokVersion": "4.2.3",
+  "author": "palumbon",
+  "license": "ISC"
+}

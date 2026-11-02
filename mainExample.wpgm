@@ -1,0 +1,15 @@
+import example.*
+import wollok.game.*
+
+program PepitaGame {
+	game.title("Pepita")
+	game.height(10)
+	game.width(10)
+	
+	game.addVisualCharacter(wko)
+
+	keyboard.space().onPressDo({ game.say(wko, pokedex.ditto()) })
+	keyboard.enter().onPressDo({ pokedex.cargar() })
+	
+	game.start()
+}
