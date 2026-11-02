@@ -1,8 +1,7 @@
-import { createServer } from 'node:http'
-import { McpServer } from '@modelcontextprotocol/sdk/server/mcp.js'
 import { StreamableHTTPServerTransport } from '@modelcontextprotocol/sdk/server/streamableHttp.js'
+import { createServer } from 'node:http'
 
-const host = process.env.MCP_HOST ?? '127.0.0.1'
+const host = process.env.MCP_HOST ?? 'localhost'
 const port = Number(process.env.MCP_PORT ?? 3000)
 const endpoint = '/mcp'
 const pendingMoves = []
@@ -63,50 +62,53 @@ function sendError(response, status, message) {
   response.end(JSON.stringify({ error: message }))
 }
 
-const httpServer = createServer(async (request, response) => {
-  const requestUrl = new URL(request.url, `http://${host}:${port}`)
-  if (requestUrl.pathname !== endpoint) {
-    sendError(response, 404, 'Ruta inexistente')
-    return
-  }
+function serveMCP(mcp) {
 
-  if (request.method !== 'POST') {
-    response.writeHead(405, { Allow: 'POST' })
-    response.end()
-    return
-  }
+  const httpServer = createServer(async (request, response) => {
+    const requestUrl = new URL(request.url, `http://${host}:${port}`)
+    if (requestUrl.pathname !== endpoint) {
+      sendError(response, 404, 'Ruta inexistente')
+      return
+    }
 
-  let body
-  try {
-    body = await readJsonBody(request)
-  } catch (error) {
-    sendError(response, 400, error instanceof SyntaxError ? 'JSON inválido' : error.message)
-    return
-  }
+    if (request.method !== 'POST') {
+      response.writeHead(405, { Allow: 'POST' })
+      response.end()
+      return
+    }
 
-  const mcp = createMcpServer()
-  const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
+    let body
+    try {
+      body = await readJsonBody(request)
+    } catch (error) {
+      sendError(response, 400, error instanceof SyntaxError ? 'JSON inválido' : error.message)
+      return
+    }
 
-  response.on('close', () => {
-    void transport.close()
-    void mcp.close()
+    const transport = new StreamableHTTPServerTransport({ sessionIdGenerator: undefined })
+
+    response.on('close', () => {
+      void transport.close()
+      void mcp.close()
+    })
+
+    try {
+      await mcp.connect(transport)
+      await transport.handleRequest(request, response, body)
+    } catch (error) {
+      console.error('Error al procesar solicitud MCP:', error)
+      if (!response.headersSent) {
+        sendError(response, 500, 'Error interno del servidor MCP')
+      }
+    }
   })
 
-  try {
-    await mcp.connect(transport)
-    await transport.handleRequest(request, response, body)
-  } catch (error) {
-    console.error('Error al procesar solicitud MCP:', error)
-    if (!response.headersSent) {
-      sendError(response, 500, 'Error interno del servidor MCP')
-    }
-  }
-})
+  httpServer.listen(port, host, () => {
+    const address = httpServer.address()
+    const listeningPort = typeof address === 'object' && address ? address.port : port
+    console.log(`🤖 MCP available at http://${host}:${listeningPort}${endpoint}`)
+  })
 
-httpServer.listen(port, host, () => {
-  const address = httpServer.address()
-  const listeningPort = typeof address === 'object' && address ? address.port : port
-  console.log(`Servidor MCP disponible en http://${host}:${listeningPort}${endpoint}`)
-})
+}
 
-export { pendingMoves, position }
+export { pendingMoves, position, serveMCP }

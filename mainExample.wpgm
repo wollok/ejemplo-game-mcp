@@ -1,3 +1,4 @@
+import mcpServer.*
 import example.*
 import wollok.game.*
 
@@ -10,5 +11,13 @@ program PepitaGame {
 	
 	game.tick(100, { mcp.flush() }, true).start()
 	
+	mcp.registerAction("Mueve al personaje hacia la derecha", { wko.right() })
+	mcp.registerAction("Mueve al personaje hacia la arriba", { wko.up() })
+	mcp.registerAction("Mueve al personaje hacia la abajo", { wko.down() })
+	mcp.registerAction("Mueve al personaje hacia la izquierda", { wko.left() })
+
+	mcp.registerAction("Obtiene la posición del personaje", { wko.position().toString() })
+
+	mcp.serve()
 	game.start()
 }
