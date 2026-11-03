@@ -1,0 +1,63 @@
+import wollok.game.*
+import pixelArt.*
+
+test "encodes bytes as base64" {
+  assert.equals("iVBO", pixelArt.encodeBytes([137, 80, 78]))
+  assert.equals("AQ==", pixelArt.encodeBytes([1]))
+  assert.equals("AQI=", pixelArt.encodeBytes([1, 2]))
+}
+
+test "calculates PNG CRC32 values" {
+  assert.equals(2923585666, pixelArt.crc32([73, 69, 78, 68]))
+  assert.equals(2372871909, pixelArt.crc32([73, 72, 68, 82, 0, 0, 0, 5, 0, 0, 0, 5, 8, 6, 0, 0, 0]))
+}
+
+test "writes PNG chunk lengths and CRCs" {
+  const chunk = []
+  const header = [0, 0, 0, 5, 0, 0, 0, 5, 8, 6, 0, 0, 0]
+  pixelArt.appendChunk(chunk, [73, 72, 68, 82], header)
+
+  assert.equals(0, chunk.get(0))
+  assert.equals(0, chunk.get(1))
+  assert.equals(0, chunk.get(2))
+  assert.equals(13, chunk.get(3))
+  assert.equals(73, chunk.get(4))
+  assert.equals(72, chunk.get(5))
+  assert.equals(68, chunk.get(6))
+  assert.equals(82, chunk.get(7))
+  assert.equals(141, chunk.get(21))
+  assert.equals(111, chunk.get(22))
+  assert.equals(38, chunk.get(23))
+  assert.equals(229, chunk.get(24))
+
+  const endChunk = []
+  pixelArt.appendChunk(endChunk, [73, 69, 78, 68], [])
+  assert.equals(12, endChunk.size())
+  assert.equals(0, endChunk.get(3))
+  assert.equals(73, endChunk.get(4))
+  assert.equals(69, endChunk.get(5))
+  assert.equals(78, endChunk.get(6))
+  assert.equals(68, endChunk.get(7))
+}
+
+test "encodes a transparent 5x5 PNG" {
+  game.width(5)
+  game.height(5)
+  const transparentImage = pixelArt.encode()
+  assert.that(transparentImage.startsWith("iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbybl"))
+}
+
+test "encodes black and white pixels differently" {
+  game.width(5)
+  game.height(5)
+  const transparentImage = pixelArt.encode()
+  pixelArt.newPixelIn(game.at(0, 0))
+  const blackImage = pixelArt.encode()
+  assert.that(blackImage.startsWith("iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbybl"))
+  assert.notEquals(transparentImage, blackImage)
+
+  pixelArt.pixels().first().toogle()
+  const whiteImage = pixelArt.encode()
+  assert.that(whiteImage.startsWith("iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbybl"))
+  assert.notEquals(blackImage, whiteImage)
+}

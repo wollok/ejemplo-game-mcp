@@ -3,14 +3,16 @@ import pixelArt.*
 
 program PixelArt {
 	game.title("Pixel Art")
-	game.height(50)
-	game.width(50)
+	game.height(25)
+	game.width(25)
 	game.cellSize(10)
 	game.ground("white.png")
 	
 	// pixelArt.createCanvas()
 
 	game.onClickDo { position => pixelArt.newPixelIn(position) }
+
+	keyboard.space().onPressDo({ console.println(pixelArt.encode()) })
 	
 	game.start()
 }
