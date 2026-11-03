@@ -14,6 +14,7 @@
   "author": "palumbon",
   "license": "ISC",
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.32.2"
+    "@modelcontextprotocol/sdk": "^1.32.2",
+    "zod": "^4.6.7"
   }
 }

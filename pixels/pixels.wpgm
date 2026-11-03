@@ -1,19 +1,28 @@
 import wollok.game.*
+import mcpServer.*
 import pixelArt.*
 import pngGenerator.*
 
 program PixelArt {
 	game.title("Pixel Art")
-	game.height(5)
-	game.width(5)
+	game.height(20)
+	game.width(20)
 	game.cellSize(10)
 	game.ground("white.png")
+	game.tick(100, { mcp.flush() }, true).start()
 	
 	// pixelArt.createCanvas()
-
-	game.onClickDo { position => pixelArt.newPixelIn(position) }
-
+	game.onClickDo({ position => pixelArt.newPixelIn(position) })
+	
+	mcp.registerAction(
+		"Activa el pixel en la coordenada indicada",
+		"coordinates",
+		"Coordenada en el formato x@y, por ejemplo 1@2",
+		{ x, y => pixelArt.newPixelIn(game.at(x, y)) }
+	)
+	
 	keyboard.space().onPressDo({ pngGenerator.generate(pixelArt.encode()) })
 	
+	mcp.serve()
 	game.start()
 }

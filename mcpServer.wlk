@@ -4,6 +4,7 @@ object mcp {
   method flush() native
   method serve() native
   method registerAction(description, action) native
+  method registerAction(description, parameterName, parameterDescription, action) native
   
   
   method x() = wko.position().x()
