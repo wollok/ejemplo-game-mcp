@@ -8,3 +8,6 @@ log
 
 # Dependencies
 node_modules
+
+# Tests
+export

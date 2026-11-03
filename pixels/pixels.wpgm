@@ -1,10 +1,11 @@
 import wollok.game.*
 import pixelArt.*
+import pngGenerator.*
 
 program PixelArt {
 	game.title("Pixel Art")
-	game.height(25)
-	game.width(25)
+	game.height(5)
+	game.width(5)
 	game.cellSize(10)
 	game.ground("white.png")
 	
@@ -12,7 +13,7 @@ program PixelArt {
 
 	game.onClickDo { position => pixelArt.newPixelIn(position) }
 
-	keyboard.space().onPressDo({ console.println(pixelArt.encode()) })
+	keyboard.space().onPressDo({ pngGenerator.generate(pixelArt.encode()) })
 	
 	game.start()
 }

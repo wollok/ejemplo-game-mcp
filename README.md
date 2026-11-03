@@ -5,3 +5,5 @@ La IA puede mover al personaje
 - también puede consultar su posición actual
 
 ![demo](./juego-con-ia.gif)
+
+En el proyecto de pixel art, presioná Espacio para exportar el dibujo como `export/pixel-art.png`.

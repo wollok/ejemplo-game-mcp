@@ -1,0 +1,8 @@
+import pixelArt.*
+import pngGenerator.*
+test "exports a PNG image" {
+  game.width(5)
+  game.height(5);
+  (0..4).forEach({n => pixelArt.newPixelIn(game.at(3,n))})
+  pngGenerator.generate(pixelArt.encode())
+}
